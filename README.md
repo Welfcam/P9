@@ -1,42 +1,18 @@
-# Projet 9: Améliorez une organisation Salesforce pour votre entreprise
+# Salesforce DX Project: Next Steps
 
-## Prérequis
-Avant de commencer, assurez-vous d’avoir :
-- Un compte Salesforce valide avec un environnement sandbox ou de développement.
-- Les autorisations nécessaires pour créer des objets personnalisés et déployer des packages.
-- Git installé sur votre machine pour cloner le projet.
+Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
 
-## Installation
+## How Do You Plan to Deploy Your Changes?
 
-### 1. Cloner le dépôt
-Commencez par cloner ce dépôt GitHub sur votre machine locale.
+Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
 
-```bash
-git clone https://github.com/[votre-utilisateur]/[votre-repo].git
-cd [votre-repo]
-```
+## Configure Your Salesforce DX Project
 
-### 2. Connexion à votre environnement Salesforce
-En utilisant Salesforce DX, connectez-vous à votre organisation Salesforce. Voir documentation : https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_web_flow.htm
+The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
 
-```bash
-sf org login web --alias my-org [nom-de-votre-org]
-```
+## Read All About It
 
-### 3. Déployer le projet sur Salesforce
-Une fois connecté, vous pouvez déployer le projet dans votre environnement Salesforce en exécutant la commande suivante (https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_push_md_to_scratch_org.htm) :
-
-```bash
-sf project deploy start
-```
-
-### 4. Vérification des objets
-Après le déploiement, connectez-vous à votre organisation Salesforce et vérifiez que les champs personnalisés pour les **Commandes (Order)** et **Comptes  (Account)** sont créés. Veuillez vérifier également que les classes / triggers et le composant Lightning Web Components ont bien été créés.
-
-## Utilisation
-- Accédez aux objets et champs **Commandes** et **Comptes** dans votre environnement Salesforce, puis assurez-vous que les profils disposent des autorisations appropriées pour effectuer des opérations CRUD.
-
-## Ressources supplémentaires
-- [Salesforce Developer Documentation](https://developer.salesforce.com/docs)
-- [Guide d'utilisation de Salesforce CLI](https://developer.salesforce.com/tools/sfdxcli)
-
+- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
+- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
+- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
+- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
