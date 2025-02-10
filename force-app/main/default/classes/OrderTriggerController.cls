@@ -33,4 +33,13 @@ public with sharing class OrderTriggerController {
         //Mise à jour des comptes
         update accountsToUpdate;
     }
+
+    public static void CalculateTotalWithShipment(List<Order> newOrders) {
+        for(Order order : newOrders) {
+            if(order.ShipmentCost__c == null) {
+                order.ShipmentCost__c = 0;
+            }
+            order.TotalWithShipment__c = order.TotalAmount + order.ShipmentCost__c;
+        }
+    }
 }
