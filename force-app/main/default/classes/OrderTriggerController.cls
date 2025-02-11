@@ -1,26 +1,22 @@
 public with sharing class OrderTriggerController {
     public static void UpdateAccountCA(List<Order> newOrders, Map<Id, Order> oldOrdersMap) {   
-        //Création d'une Map pour stocker le compte et le montant total des commandes associées au compte
-        Map<Id, Decimal> accountTotalMap = new Map<Id, Decimal>();
         
-        //Pour chaque commande qui vient d'être activée
+        Map<Id, Decimal> acctAndTotalAmount = new Map<Id, Decimal>();
+        
         for(Order order : newOrders) {
             Order oldOrder = oldOrdersMap.get(order.Id);
             if(order.Status == 'Activated' && oldOrder.Status != 'Activated') {
-                //on vérifie que le compte n'est pas déjà présent et si c'est le cas on additionne le montant de la commande au montant existant
-                if(accountTotalMap.containsKey(order.AccountId)) {
-                    Decimal currentTotal = accountTotalMap.get(order.AccountId);
-                    accountTotalMap.put(order.AccountId, currentTotal + order.TotalAmount);
-                    //Sinon on ajoute le montant de la commande.
+                if(acctAndTotalAmount.containsKey(order.AccountId)) {
+                    Decimal currentValue = acctAndTotalAmount.get(order.AccountId);
+                    currentValue = currentValue + order.TotalAmount;
+                    acctAndTotalAmount.put(order.AccountId, currentValue);
                 } else {
-                    accountTotalMap.put(order.AccountId, order.TotalAmount);
+                    acctAndTotalAmount.put(order.AccountId, order.TotalAmount);
                 }
             }
         }
         
-        //Liste des comptes concernés pas les changements
-        List<Account> accountsToUpdate = [SELECT Id, Chiffre_d_affaire__c FROM Account WHERE Id IN :accountTotalMap.keySet()];
-        //Mise à jour du champs chiffre d'affaires pour chaque compte de la liste.
+        List<Account> accountsToUpdate = [SELECT Id, Chiffre_d_affaire__c FROM Account WHERE Id IN :acctAndTotalAmount.keySet()];
         for(Account acct : accountsToUpdate) {
             Decimal currentCA;
             if(acct.Chiffre_d_affaire__c != null) {
@@ -28,9 +24,17 @@ public with sharing class OrderTriggerController {
             } else {
                 currentCA = 0;
             }
-            acct.Chiffre_d_affaire__c = currentCA + accountTotalMap.get(acct.Id);
+            acct.Chiffre_d_affaire__c = currentCA + acctAndTotalAmount.get(acct.Id);
         }
-        //Mise à jour des comptes
         update accountsToUpdate;
+    }
+
+    public static void CalculateTotalWithShipment(List<Order> newOrders) {
+        for(Order order : newOrders) {
+            if(order.ShipmentCost__c == null) {
+                order.ShipmentCost__c = 0;
+            }
+            order.TotalWithShipment__c = order.TotalAmount + order.ShipmentCost__c;
+        }
     }
 }
