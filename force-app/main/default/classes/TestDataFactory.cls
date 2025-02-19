@@ -5,6 +5,12 @@ public with sharing class TestDataFactory {
         return testAccount1;
     }
 
+    public static Account createTestAccount2() {
+        Account testAccount2 = new Account(Name = 'Test Account 2');
+        insert testAccount2;
+        return testAccount2;
+    }
+
     public static List<Product2> createTestProductList() {
         List<Product2> testProductsList = new List<Product2>();
         testProductsList.add(new Product2(Name = 'Produit 1'));
