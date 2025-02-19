@@ -15,18 +15,7 @@ public with sharing class OrderTriggerController {
                 }
             }
         }
-        
-        List<Account> accountsToUpdate = [SELECT Id, Chiffre_d_affaire__c FROM Account WHERE Id IN :acctAndTotalAmount.keySet()];
-        for(Account acct : accountsToUpdate) {
-            Decimal currentCA;
-            if(acct.Chiffre_d_affaire__c != null) {
-                currentCA = acct.Chiffre_d_affaire__c;
-            } else {
-                currentCA = 0;
-            }
-            acct.Chiffre_d_affaire__c = currentCA + acctAndTotalAmount.get(acct.Id);
-        }
-        update accountsToUpdate;
+        AccountController.updateAccountCA(acctAndTotalAmount);
     }
 
     public static void CalculateTotalWithShipment(List<Order> newOrders) {
