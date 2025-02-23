@@ -62,6 +62,21 @@ jobs:
         if: always()
         run: sf org delete scratch -p -o scratch-org
 
+  lwc-tests:
+    name: "Run LWC Tests"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout source code'
+        uses: actions/checkout@v4
+
+      - name: 'Install npm dependencies'
+        if: steps.cache-npm.outputs.cache-hit != 'true'
+        run: HUSKY=0 npm ci
+
+      - name: 'Unit test Lightning Web Components'
+        run: npm run test:unit
+
       # - name: 'Generate metadata delta pull request'  # Utilisez le plug-in sfdx-git-delta pour effectuer un delta, generer le package xml dans un fichier temporaire ex : .temp
       #   run:  # A faire
 
