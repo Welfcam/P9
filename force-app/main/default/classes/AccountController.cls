@@ -35,5 +35,6 @@ public with sharing class AccountController {
     @AuraEnabled(Cacheable=true)
     public static Decimal getAccountCA(Id accountId) {
         return AccountSelector.getAccountCA(accountId);
+        //throw new AuraHandledException('Forced error');
     }
 }
