@@ -71,8 +71,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 'Install npm dependencies'
-        if: steps.cache-npm.outputs.cache-hit != 'true'
-        run: HUSKY=0 npm ci
+        run: npm install --legacy-peer-deps
 
       - name: 'Unit test Lightning Web Components'
         run: npm run test:unit
