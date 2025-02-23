@@ -17,7 +17,7 @@ private class UpdateAccountCABatchControllerTest {
         update testOrderList1;
         update testOrderList2;
         Test.startTest();
-        UpdateAccountCABatchController.runUpdateAccountCABatchController();
+        UpdateAccountCABatchController.runUpdateAccountCABatch();
         Test.stopTest();
         List<Account> acctList = [SELECT Id, Name, Chiffre_d_affaire__c FROM Account];
         Assert.areEqual(3800, acctList[0].Chiffre_d_affaire__c, 'Should return 3800');
@@ -42,7 +42,7 @@ private class UpdateAccountCABatchControllerTest {
         testOrderList1[1].Status = 'Draft';
         update testOrderList1;
         Test.startTest();
-        UpdateAccountCABatchController.runUpdateAccountCABatchController();
+        UpdateAccountCABatchController.runUpdateAccountCABatch();
         Test.stopTest();
         List<Account> acctList = [SELECT Id, Name, Chiffre_d_affaire__c FROM Account];
         Assert.areEqual(1900, acctList[0].Chiffre_d_affaire__c, 'Should return 1900');
@@ -64,7 +64,7 @@ private class UpdateAccountCABatchControllerTest {
         testOrderList1[1].Status = 'Activated';
         update testOrderList1;
         Test.startTest();
-        UpdateAccountCABatchController.runUpdateAccountCABatchController();
+        UpdateAccountCABatchController.runUpdateAccountCABatch();
         Test.stopTest();
         Account acct = [SELECT Id, Name, Chiffre_d_affaire__c FROM Account WHERE Id = :testAccount1.Id];
         Assert.areEqual(0, acct.Chiffre_d_affaire__c, 'Should return 0');
