@@ -33,6 +33,9 @@ jobs:
           npm install -g @salesforce/cli@latest
           echo "y" | npm install sfdx-git-delta@3.3.0 -g
 
+      # - name: 'Authentification Salesforce' # Vous devez avoir une connexion avec Salesforce pour pouvoir deployer le code à la dernière étape.
+      #   run:  # A faire    
+
       - name: 'Populate auth file with DEVHUB_SFDX_URL secret'
         shell: bash
         run: |
@@ -46,8 +49,18 @@ jobs:
       - name: 'Authenticate Dev Hub'
         run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
 
-      # - name: 'Authentification Salesforce' # Vous devez avoir une connexion avec Salesforce pour pouvoir deployer le code à la dernière étape.
-      #   run:  # A faire
+      - name: 'Create scratch org'
+        run: sf org create scratch -f config/project-scratch-def.json -a scratch-org -d -y 1
+
+      - name: 'Push source to scratch org'
+        run: sf project deploy start
+
+      - name: 'Run Apex tests'
+        run: sf apex test run -c -r human -d ./tests/apex -w 20
+
+      - name: 'Delete scratch org'
+        if: always()
+        run: sf org delete scratch -p -o scratch-org
 
       # - name: 'Generate metadata delta pull request'  # Utilisez le plug-in sfdx-git-delta pour effectuer un delta, generer le package xml dans un fichier temporaire ex : .temp
       #   run:  # A faire
