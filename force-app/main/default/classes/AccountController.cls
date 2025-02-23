@@ -31,4 +31,9 @@ public with sharing class AccountController {
         }
         update accountsToUpdate;
     }
+
+    @AuraEnabled(Cacheable=true)
+    public static Decimal getAccountCA(Id accountId) {
+        return AccountSelector.getAccountCA(accountId);
+    }
 }

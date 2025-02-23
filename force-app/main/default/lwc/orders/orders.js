@@ -1,10 +1,11 @@
 import { LightningElement, api } from 'lwc';
 // TODO - récupérer la méthode apex permettant de faire ce calcul
-import getSumActivatedOrdersByAccount from '@salesforce/apex/OrderController.getSumActivatedOrdersByAccount';
+//import getSumActivatedOrdersByAccount from '@salesforce/apex/OrderController.getSumActivatedOrdersByAccount';
+import getAccountCA from '@salesforce/apex/AccountController.getAccountCA';
 
 export default class Orders extends LightningElement {
 
-    sumOrdersOfCurrentAccount;
+    accountCA;
     message;
     noOrder;
     error;
@@ -16,15 +17,15 @@ export default class Orders extends LightningElement {
 
      // TODO - récupérer le montant total des Orders sur le compte avec la méthode apex
     fetchSumOrders() {
-        getSumActivatedOrdersByAccount({ accountId : this.recordId })
+        getAccountCA({ accountId : this.recordId })
             .then(result => {
                 if(result > 0) {
-                    this.sumOrdersOfCurrentAccount = result;
+                    this.accountCA = result;
                     this.message = 'Total of Orders : ' + result;
                     this.noOrder = undefined;
                     this.error = undefined;
                 } else {
-                    this.sumOrdersOfCurrentAccount = 0;
+                    this.accountCA = 0;
                     this.noOrder = 'Error, no orders related to this account or the amount is less than zero';
                     this.message = undefined;
                     this.error = undefined;
