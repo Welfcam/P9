@@ -21,4 +21,15 @@ private class AccountSelectorTest {
         Assert.areEqual(acct1.Id, acctList2[0].Id, 'Should return acct1 Id');
         Assert.areEqual(acct2.Chiffre_d_affaire__c, acctList2[1].Chiffre_d_affaire__c, 'Should return 2000');
     }
+
+    @isTest
+    static void testGetAccountCA() {
+        Account testAccount = TestDataFactory.createTestAccount1();
+        testAccount.Chiffre_d_affaire__c = 10000;
+        update testAccount;
+        Test.startTest();
+        Decimal accountCA = AccountSelector.getAccountCA(testAccount.Id);
+        Test.stopTest();
+        Assert.areEqual(10000, accountCA, 'Should return 10000');
+    }
 }

@@ -5,17 +5,26 @@ public with sharing class OrderTriggerController {
         
         for(Order order : newOrders) {
             Order oldOrder = oldOrdersMap.get(order.Id);
-            if(order.Status == 'Activated' && oldOrder.Status != 'Activated') {
+            if(order.Status != oldOrder.Status) {
+                Decimal amountToConsider = 0;
+                if(order.Status == 'Activated' && oldOrder.Status != 'Activated') {
+                    amountToConsider = order.TotalAmount;
+                } else if(order.Status == 'Draft' && oldOrder.Status != 'Draft') {
+                    amountToConsider = -order.TotalAmount;
+                }          
                 if(acctAndTotalAmount.containsKey(order.AccountId)) {
                     Decimal currentValue = acctAndTotalAmount.get(order.AccountId);
-                    currentValue = currentValue + order.TotalAmount;
+                    currentValue = currentValue + amountToConsider;
                     acctAndTotalAmount.put(order.AccountId, currentValue);
                 } else {
-                    acctAndTotalAmount.put(order.AccountId, order.TotalAmount);
+                    acctAndTotalAmount.put(order.AccountId, amountToConsider);
                 }
             }
         }
-        AccountController.updateAccountCA(acctAndTotalAmount);
+        
+        if(!acctAndTotalAmount.isEmpty()) {
+            AccountController.updateAccountCA(acctAndTotalAmount);
+        }
     }
 
     public static void CalculateTotalWithShipment(List<Order> newOrders) {

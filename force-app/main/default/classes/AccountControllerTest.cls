@@ -52,5 +52,16 @@ private class AccountControllerTest {
         Assert.areEqual(3800, acctList2[1].Chiffre_d_affaire__c, 'Should return 2800');
     }
 
+    @isTest
+    static void testGetAccountCA() {
+        Account testAccount = TestDataFactory.createTestAccount1();
+        testAccount.Chiffre_d_affaire__c = 10000;
+        update testAccount;
+        Test.startTest();
+        Decimal accountCA = AccountController.getAccountCA(testAccount.Id);
+        Test.stopTest();
+        Assert.areEqual(10000, accountCA, 'Should return 10000');
+    }
+
 
 }
