@@ -62,7 +62,7 @@ jobs:
         run: sf sgd source delta --to "HEAD" --from "origin/main" --output-dir "."
 
       - name: 'Deploy metadata to main branch'
-        run: sfdx force:source:deploy -x .temp/package/package.xml -u prod -w 10
+        run: sf project deploy start -x package/package.xml --post-destructive-changes destructiveChanges/destructiveChanges.xml
 
       - name: 'Delete scratch org'
         if: always()
