@@ -59,7 +59,7 @@ jobs:
         run: sf apex test run -c -r human -d ./tests/apex -w 20
 
       - name: 'Generate metadata delta pull request'
-        run: sf sgd source delta --to "HEAD" --from "origin/main" --output .temp/package/package.xml
+        run: sf sgd source delta --to "HEAD" --from "origin/main" --output-dir "."
 
       - name: 'Deploy metadata to main branch'
         run: sfdx force:source:deploy -x .temp/package/package.xml -u prod -w 10
