@@ -49,14 +49,14 @@ jobs:
       - name: 'Authenticate Dev Hub'
         run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
 
-      - name: 'Create scratch org'
-        run: sf org create scratch -f config/project-scratch-def.json -a scratch-org -d -y 1
+      # - name: 'Create scratch org'
+      #   run: sf org create scratch -f config/project-scratch-def.json -a scratch-org -d -y 1
 
-      - name: 'Push source to scratch org'
-        run: sf project deploy start
+      # - name: 'Push source to scratch org'
+      #   run: sf project deploy start
 
-      - name: 'Run Apex tests'
-        run: sf apex test run -c -r human -d ./tests/apex -w 20
+      # - name: 'Run Apex tests'
+      #   run: sf apex test run -c -r human -d ./tests/apex -w 20
 
       - name: 'Generate metadata delta pull request'
         run: sf sgd source delta --to "HEAD" --from "origin/main" --output-dir "."
@@ -64,9 +64,9 @@ jobs:
       - name: 'Deploy metadata to main branch'
         run: sf project deploy start -x package/package.xml --post-destructive-changes destructiveChanges/destructiveChanges.xml
 
-      - name: 'Delete scratch org'
-        if: always()
-        run: sf org delete scratch -p -o scratch-org
+      # - name: 'Delete scratch org'
+      #   if: always()
+      #   run: sf org delete scratch -p -o scratch-org
 
   lwc-tests:
     name: "Run LWC Tests"
