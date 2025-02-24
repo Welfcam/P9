@@ -62,7 +62,7 @@ jobs:
         run: sf sgd source delta --to "HEAD" --from "origin/main" --output-dir "."
 
       - name: 'Deploy metadata to main branch'
-        run: sf project deploy start --target-org P9 -x package/package.xml --post-destructive-changes destructiveChanges/destructiveChanges.xml
+        run: sf project deploy start --target-org devhub -x package/package.xml --post-destructive-changes destructiveChanges/destructiveChanges.xml
 
       # - name: 'Delete scratch org'
       #   if: always()
