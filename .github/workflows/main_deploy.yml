@@ -85,25 +85,29 @@ jobs:
       #   run:  # A faire déployer le code venant du fichier package.xml généré précédemment
 
   deploy-to-main:
+      name: "Deployment"
+      runs-on: ubuntu-latest
+
+      steps:
       - name: 'Generate metadata delta pull request'
-      run: |
-        mkdir -p .temp
-        sfdx sgd:source:delta --to "HEAD" --from "origin/main" --output ".temp" --generate-delta --source-dir "force-app"
-        
-        if [ -f ".temp/package/package.xml" ]; then
-            echo "Delta package.xml generated successfully"
-            cat .temp/package/package.xml
-        else
-            echo "No delta changes detected. Skipping deployment step."
-            exit 0
-        fi
+        run: |
+          mkdir -p .temp
+          sfdx sgd:source:delta --to "HEAD" --from "origin/main" --output ".temp" --generate-delta --source-dir "force-app"
+          
+          if [ -f ".temp/package/package.xml" ]; then
+              echo "Delta package.xml generated successfully"
+              cat .temp/package/package.xml
+          else
+              echo "No delta changes detected. Skipping deployment step."
+              exit 0
+          fi
 
       - name: 'Deploy metadata changes to main branch'
-      if: github.ref == 'refs/heads/main'
-      run: |
-        if [ -f ".temp/package/package.xml" ]; then
-            sf project deploy start --manifest .temp/package/package.xml --target-org devhub
-            echo "Metadata deployment completed."
-        else
-            echo "No package.xml found. Skipping deployment."
-        fi 
+        if: github.ref == 'refs/heads/main'
+        run: |
+          if [ -f ".temp/package/package.xml" ]; then
+              sf project deploy start --manifest .temp/package/package.xml --target-org devhub
+              echo "Metadata deployment completed."
+          else
+              echo "No package.xml found. Skipping deployment."
+          fi 
