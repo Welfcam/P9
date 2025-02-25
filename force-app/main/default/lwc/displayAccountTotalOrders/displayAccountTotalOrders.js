@@ -21,7 +21,7 @@ export default class DisplayAccountTotalOrders extends LightningElement {
             .then(result => {
                 if(result > 0) {
                     this.accountCA = result;
-                    this.message = 'Total of Orders : ' + result;
+                    this.message = 'Total of Orders is : ' + result;
                     this.noOrder = undefined;
                     this.error = undefined;
                 } else {
