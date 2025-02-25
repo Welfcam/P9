@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Orders from 'c/orders';
+import DisplayAccountTotalOrders from 'c/displayAccountTotalOrders';
 //Import de la méthode getAccountCA pour simuler la réponse du back end
 import getAccountCA from '@salesforce/apex/AccountController.getAccountCA';
 
@@ -13,7 +13,7 @@ jest.mock(
 );
 
 //Tests du LWC
-describe('c-orders', () => {
+describe('c-displayAccountTotalOrders', () => {
     afterEach(() => {
         while (document.body.firstChild) {
             document.body.removeChild(document.body.firstChild);
@@ -27,7 +27,7 @@ describe('c-orders', () => {
         getAccountCA.mockResolvedValue(10000);
 
         // Création du composant
-        const element = createElement('c-orders', { is: Orders });
+        const element = createElement('c-displayAccountTotalOrders', { is: DisplayAccountTotalOrders });
         element.recordId = '001XXXXXXXXXXXX'; // Simule un recordId
         document.body.appendChild(element); //ajoute l'élément au DOM
 
@@ -46,7 +46,7 @@ describe('c-orders', () => {
         getAccountCA.mockResolvedValue(0);
 
         // Création du composant
-        const element = createElement('c-orders', { is: Orders });
+        const element = createElement('c-displayAccountTotalOrders', { is: DisplayAccountTotalOrders });
         element.recordId = '001XXXXXXXXXXXX'; // Simule un recordId
         document.body.appendChild(element); //ajoute l'élément au DOM
 
@@ -65,7 +65,7 @@ describe('c-orders', () => {
         getAccountCA.mockRejectedValue(new Error('Apex error'));
 
         // Création du composant
-        const element = createElement('c-orders', { is: Orders });
+        const element = createElement('c-displayAccountTotalOrders', { is: DisplayAccountTotalOrders });
         element.recordId = '001XXXXXXXXXXXX'; // Simule un recordId
         document.body.appendChild(element); //Ajoute l'élément au DOM
 
