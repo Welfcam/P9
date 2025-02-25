@@ -31,14 +31,95 @@ jobs:
       - name: Install SFDX CLI and sfdx-git-delta plugin # Ce package va vous permettre de faire un delta entre votre branche et la branch ciblé. Voici la documentation : https://github.com/scolladon/sfdx-git-delta
         run: |
           npm install -g @salesforce/cli@latest
-          echo "y" | npm install sfdx-git-delta@3.3.0 -g
+          echo "y" | sf plugins install sfdx-git-delta
 
-      - name: 'Authentification Salesforce' # Vous devez avoir une connexion avec Salesforce pour pouvoir deployer le code à la dernière étape.
-        run:  # A faire
+      # - name: 'Authentification Salesforce' # Vous devez avoir une connexion avec Salesforce pour pouvoir deployer le code à la dernière étape.
+      #   run:  # A faire    
 
-      - name: 'Generate metadata delta pull request'  # Utilisez le plug-in sfdx-git-delta pour effectuer un delta, generer le package xml dans un fichier temporaire ex : .temp
-        run:  # A faire
+      - name: 'Populate auth file with DEVHUB_SFDX_URL secret'
+        shell: bash
+        run: |
+          echo ${{ secrets.DEVHUB_SFDX_URL }} > ./DEVHUB_SFDX_URL.txt
+          secretFileSize=$(wc -c "./DEVHUB_SFDX_URL.txt" | awk '{print $1}')
+          if [ $secretFileSize == 1 ]; then
+              echo "Missing DEVHUB_SFDX_URL secret. Is this workflow running on a fork?";
+              exit 1;
+          fi
 
-      - name: 'Déployer les métadonnées sur la branch main'
-        if: github.ref == 'refs/heads/main'
-        run:  # A faire déployer le code venant du fichier package.xml généré précédemment 
+      - name: 'Authenticate Dev Hub'
+        run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
+
+      - name: 'Create scratch org'
+        run: sf org create scratch -f config/project-scratch-def.json -a scratch-org -d -y 1
+
+      - name: 'Push source to scratch org'
+        run: sf project deploy start
+
+      - name: 'Run Apex tests'
+        run: sf apex test run -c -r human -d ./tests/apex -w 20
+
+      - name: 'Delete scratch org'
+        if: always()
+        run: sf org delete scratch -p -o scratch-org
+
+  lwc-tests:
+    name: "Run LWC Tests"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout source code'
+        uses: actions/checkout@v4
+
+      - name: 'Install npm dependencies'
+        run: npm install --legacy-peer-deps
+
+      - name: 'Unit test Lightning Web Components'
+        run: npm run test:unit
+
+      # - name: 'Generate metadata delta pull request'  # Utilisez le plug-in sfdx-git-delta pour effectuer un delta, generer le package xml dans un fichier temporaire ex : .temp
+      #   run:  # A faire
+      # - name: 'Déployer les métadonnées sur la branch main'
+      #   if: github.ref == 'refs/heads/main'
+      #   run:  # A faire déployer le code venant du fichier package.xml généré précédemment
+
+  deploy-to-main:
+    name: "Deployment"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install SFDX CLI and sfdx-git-delta plugin # Ce package va vous permettre de faire un delta entre votre branche et la branch ciblé. Voici la documentation : https://github.com/scolladon/sfdx-git-delta
+        run: |
+          npm install -g @salesforce/cli@latest
+          echo "y" | sf plugins install sfdx-git-delta
+
+      # - name: 'Authentification Salesforce' # Vous devez avoir une connexion avec Salesforce pour pouvoir deployer le code à la dernière étape.
+      #   run:  # A faire    
+
+      - name: 'Populate auth file with DEVHUB_SFDX_URL secret'
+        shell: bash
+        run: |
+          echo ${{ secrets.DEVHUB_SFDX_URL }} > ./DEVHUB_SFDX_URL.txt
+          secretFileSize=$(wc -c "./DEVHUB_SFDX_URL.txt" | awk '{print $1}')
+          if [ $secretFileSize == 1 ]; then
+              echo "Missing DEVHUB_SFDX_URL secret. Is this workflow running on a fork?";
+              exit 1;
+          fi
+
+      - name: 'Authenticate Dev Hub'
+        run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
+      
+      - name: 'Generate metadata delta pull request'
+        run: sf sgd source delta --to "HEAD" --from "origin/main" --output-dir "."
+
+      - name: 'Deploy metadata to main branch'
+        run: sf project deploy start --target-org devhub -x package/package.xml
+      

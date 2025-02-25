@@ -1,4 +1,6 @@
-public with sharing class TestDataFactory {
+@isTest
+public class TestDataFactory {
+    
     public static Account createTestAccount1() {
         Account testAccount1 = new Account(Name = 'Test Account 1');
         insert testAccount1;

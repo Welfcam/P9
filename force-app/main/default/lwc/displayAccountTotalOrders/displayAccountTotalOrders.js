@@ -3,7 +3,7 @@ import { LightningElement, api } from 'lwc';
 //import getSumActivatedOrdersByAccount from '@salesforce/apex/OrderController.getSumActivatedOrdersByAccount';
 import getAccountCA from '@salesforce/apex/AccountController.getAccountCA';
 
-export default class Orders extends LightningElement {
+export default class DisplayAccountTotalOrders extends LightningElement {
 
     accountCA;
     message;
