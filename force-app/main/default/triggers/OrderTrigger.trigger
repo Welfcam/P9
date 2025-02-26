@@ -1,8 +1,8 @@
 trigger OrderTrigger on Order (before update, after update) {
 	if(trigger.isBefore) {
-		OrderTriggerController.CalculateTotalWithShipment(Trigger.new);
+		OrderTriggerController.calculateTotalWithShipment(Trigger.new);
 	}
 	if(trigger.isAfter) {
-		OrderTriggerController.UpdateAccountCA(Trigger.new, Trigger.oldMap);
+		OrderTriggerController.updateAccountCA(Trigger.new, Trigger.oldMap);
 	}
 }

@@ -1,6 +1,7 @@
 @isTest
 private class UpdateOrderItemPricesBatchTest {
 
+    
     @isTest
     static void testUpdateOrderItemsPrices() {
         Account testAccount1 = TestDataFactory.createTestAccount1();

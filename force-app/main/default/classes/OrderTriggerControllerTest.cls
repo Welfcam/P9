@@ -60,6 +60,7 @@ private class OrderTriggerControllerTest {
         Assert.areEqual(193800, testAccount.Chiffre_d_affaire__c, 'Should return 193800');
     }
 
+    //test du calcul du totalWithShipment
     @isTest
     static void testCalculateTotalWithShipment() {
         Account testAccount = TestDataFactory.createTestAccount1();

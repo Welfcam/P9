@@ -1,7 +1,8 @@
-public without sharing class OrderController {
-    @AuraEnabled(Cacheable=true)
-    public static Decimal getSumActivatedOrdersByAccount(Id accountId) {
-        AggregateResult groupedResults = OrderSelector.getSumActivatedOrderByAccountId(accountId);
-        return (Decimal)groupedResults.get('total');
+//Classe de gestion de Orders. Utilise OrderSelector pour interagir avec la base de données.
+public with sharing class OrderController {
+    //Retourne les Id des comptes passés en paramètre avec la somme des commandes activées associées.
+    public static List<AggregateResult> getSumActivatedOrdersByAccounts(Set<Id> setAccountIds) {
+        List<AggregateResult> listGroupedResults = OrderSelector.getSumActivatedOrderByAccountIds(setAccountIds);
+        return listGroupedResults;
     }
 }
