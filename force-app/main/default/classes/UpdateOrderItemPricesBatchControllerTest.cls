@@ -7,8 +7,8 @@ private class UpdateOrderItemPricesBatchControllerTest {
         Account testAccount2 = TestDataFactory.createTestAccount2();
         List<Product2> testProductsList = TestDataFactory.createTestProductList();
         List<PricebookEntry> testPbe = TestDataFactory.createPricebookEntryList(testProductsList);
-        List<Order> testOrderList1 = TestDataFactory.createTestOrderList(4, testAccount1.Id, Test.getStandardPricebookId(), 'Draft');
-        List<Order> testOrderList2 = TestDataFactory.createTestOrderList(2, testAccount2.Id, Test.getStandardPricebookId(), 'Draft');
+        List<Order> testOrderList1 = TestDataFactory.createTestOrderList(20, testAccount1.Id, Test.getStandardPricebookId(), 'Draft');
+        List<Order> testOrderList2 = TestDataFactory.createTestOrderList(30, testAccount2.Id, Test.getStandardPricebookId(), 'Draft');
         List<OrderItem> testOrderItemList = TestDataFactory.createTestOrderItemList(testOrderList1, testPbe);
         List<OrderItem> testOrderItemList2 = TestDataFactory.createTestOrderItemList(testOrderList2, testPbe);
         testOrderList1[0].Status = 'Activated';
@@ -20,15 +20,23 @@ private class UpdateOrderItemPricesBatchControllerTest {
             pbe.UnitPrice += 100;
         }
         update testpbe;
+        List<Account> listAcctToCheckCA1 = [SELECT Id, Chiffre_d_affaire__c FROM Account];
+        List<Order> listOrderToCheckTotalAmount1 = [SELECT Id, TotalAmount FROM Order WHERE TotalAmount = 1900 AND Status = 'Draft'];
         Test.startTest();
         UpdateOrderItemPricesBatchController.runUpdateOrderItemPricesBatch();
         Test.stopTest();
-        List<Order> orderListAcc1 = [SELECT Id, AccountId, TotalAmount FROM Order WHERE AccountId = :testAccount1.Id];
-        List<OrderItem> oitList = [SELECT Id, OrderId, TotalPrice FROM OrderItem WHERE OrderId = :testOrderList2[0].Id];
-        List<OrderItem> oitList2 = [SELECT Id, OrderId, TotalPrice FROM OrderItem WHERE OrderId = :testOrderList2[1].Id];
-        Assert.areEqual(1900, orderListAcc1[0].TotalAmount, 'Should return 1900');
-        Assert.areEqual(2900, orderListAcc1[2].TotalAmount, 'Should return 2900');
-        Assert.areEqual(300, oitList[0].TotalPrice, 'Should return 300');
-        Assert.areEqual(600, oitList2[0].TotalPrice, 'Should return 600');
+        List<Account> listAcctToCheckCA2 = [SELECT Id, Chiffre_d_affaire__c FROM Account];
+        List<Order> listOrderToCheckTotalAmount2 = [SELECT Id, TotalAmount FROM Order WHERE TotalAmount = 1900 AND Status = 'Draft'];
+        List<Order> listOrderToCheckTotalAmount3 = [SELECT Id, TotalAmount FROM Order WHERE TotalAmount = 2900 AND Status = 'Draft'];
+        Assert.areEqual(2, listAcctToCheckCA1.size(), 'Should return 2 results');
+        //Vérifie que le CA des comptes, donc des commandes activées, n'a pas changé après la mise à jour du prix des produits par le Batch
+        Assert.areEqual(listAcctToCheckCA2[0].Chiffre_d_affaire__c, listAcctToCheckCA1[0].Chiffre_d_affaire__c, 'Should return same Amount (3800)');
+        Assert.areEqual(listAcctToCheckCA2[1].Chiffre_d_affaire__c, listAcctToCheckCA1[1].Chiffre_d_affaire__c, 'Should return same Amount (1900)');
+        //Vérifie le nombre de commandes en draft avec un totalAmount de 1900 avant le batch
+        Assert.areEqual(47, listOrderToCheckTotalAmount1.size(), 'Should return 47 results');
+        //Vérifie qu'il n'a plus de commandes en draft avec un totalAmount de 1900 après le batch
+        Assert.areEqual(0, listOrderToCheckTotalAmount2.size(), 'Should return 0 results');
+        //Vérifie qu'il y a 97 commandes avec un totalAmount de 2900, après le batch
+        Assert.areEqual(47, listOrderToCheckTotalAmount3.size(), 'Should return 47 results');
     }
 }

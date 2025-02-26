@@ -17,5 +17,6 @@ global class UpdateOrderItemPricesBatch implements Database.Batchable<sObject>{
 
     global void finish(Database.BatchableContext info) {
         System.debug('Batch finished !');
+        System.debug('CPU Time (ms): ' + Limits.getCpuTime());
     }
 }
