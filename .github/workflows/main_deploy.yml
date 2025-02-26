@@ -85,6 +85,9 @@ jobs:
   deploy-to-main:
     name: "Deployment"
     runs-on: ubuntu-latest
+    needs:
+      - sfdxvalidate
+      - lwc-tests
 
     steps:
       - uses: actions/checkout@v4
