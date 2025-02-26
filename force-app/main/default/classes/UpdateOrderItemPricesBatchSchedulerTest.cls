@@ -1,6 +1,7 @@
 @isTest
 private class UpdateOrderItemPricesBatchSchedulerTest {
 
+    //Test du Scheduler pour une exécution tous les lundi à minuit
     @isTest
     static void testSchedulerToUpdatePrices() {
         Account testAccount1 = TestDataFactory.createTestAccount1();
