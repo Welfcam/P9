@@ -1,6 +1,7 @@
 @isTest
 private class UpdateAccountCABatchTest {
 
+    //Test du Batch avec des comptes ayant des commandes activées et des commandes draft
     @isTest
     static void calculateCAwhithActivatedOrders() {
         Account testAccount1 = TestDataFactory.createTestAccount1();
@@ -25,6 +26,7 @@ private class UpdateAccountCABatchTest {
         Assert.areEqual(1900, acctList[1].Chiffre_d_affaire__c, 'Should return 1900');
     }
 
+    //Test du Batch avec des commandes qui passent de Activated à Draft
     @isTest
     static void calculateCAwhithOrderRevertsToDraft() {
         Account testAccount1 = TestDataFactory.createTestAccount1();
@@ -51,6 +53,7 @@ private class UpdateAccountCABatchTest {
         Assert.areEqual(1900, acctList[1].Chiffre_d_affaire__c, 'Should return 1900');
     }
 
+    //Test du Batch lorsqu'un compte a des commandes activées dont le totalAmount = 0
     @isTest
     static void calculateCAAccountOrderAtZero() {
         Account testAccount1 = TestDataFactory.createTestAccount1();

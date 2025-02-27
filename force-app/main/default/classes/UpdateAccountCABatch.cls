@@ -1,3 +1,4 @@
+//Ce batch permet de mettre à jour le CA des comptes, en le recalculant à partir des orders activées
 global class UpdateAccountCABatch implements Database.Batchable<sObject>{
     global Database.QueryLocator start(Database.BatchableContext info){ 
         //Requeter seulement les comptes qui ont au moins une commande avec le Status 'Activated'

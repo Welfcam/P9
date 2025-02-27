@@ -1,5 +1,6 @@
 name: Deploy and Validate Metadata
 
+# Le Workflow est exécuté à chaque pull request et à chaque push sur la branche main
 on:
   pull_request:
     branches:
@@ -9,7 +10,9 @@ on:
     branches:
       - main
 
+# 3 jobs
 jobs:
+# 1) Validation des métadonnées Salesforce
   sfdxvalidate:
     name: "Run SFDX Validate"
     runs-on: ubuntu-latest
@@ -19,11 +22,12 @@ jobs:
         node-version: [18.x]
 
     steps:
-      - uses: actions/checkout@v4
+    # Clone le repo GitHub
+      - uses: actions/checkout@v4 
         with:
-          fetch-depth: 0 
+          fetch-depth: 0 # récupère l'historique Git complet pour comparer les changements
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }} # Installation de Node.js sur GitHub Actions (nécessaire pour exécuter des outils en JS : ex : Salesforce CLI...)
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
@@ -33,10 +37,7 @@ jobs:
           npm install -g @salesforce/cli@latest
           echo "y" | sf plugins install sfdx-git-delta
 
-      # - name: 'Authentification Salesforce' # Vous devez avoir une connexion avec Salesforce pour pouvoir deployer le code à la dernière étape.
-      #   run:  # A faire    
-
-      - name: 'Populate auth file with DEVHUB_SFDX_URL secret'
+      - name: 'Populate auth file with DEVHUB_SFDX_URL secret' # Création d'un secret pour l'authentification
         shell: bash
         run: |
           echo ${{ secrets.DEVHUB_SFDX_URL }} > ./DEVHUB_SFDX_URL.txt
@@ -46,55 +47,51 @@ jobs:
               exit 1;
           fi
 
-      - name: 'Authenticate Dev Hub'
+      - name: 'Authenticate Dev Hub' # Connexion à Salesforce
         run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
 
-      - name: 'Create scratch org'
+      - name: 'Create scratch org' # Création d'une scratch org pour les tests
         run: sf org create scratch -f config/project-scratch-def.json -a scratch-org -d -y 1
 
-      - name: 'Push source to scratch org'
+      - name: 'Push source to scratch org' # Déploiement du code sur la scratch Org
         run: sf project deploy start
 
-      - name: 'Run Apex tests'
+      - name: 'Run Apex tests' # Exécution des tests Apex
         run: sf apex test run -c -r human -d ./tests/apex -w 20
 
-      - name: 'Delete scratch org'
+      - name: 'Delete scratch org' # Suppression de la scratch org après les tests quelque soit le résulat
         if: always()
         run: sf org delete scratch -p -o scratch-org
 
+# 2) Tests LWC
   lwc-tests:
     name: "Run LWC Tests"
     runs-on: ubuntu-latest
 
     steps:
-      - name: 'Checkout source code'
+      - name: 'Checkout source code' # Clone le repo GitHub
         uses: actions/checkout@v4
 
-      - name: 'Install npm dependencies'
+      - name: 'Install npm dependencies' # Installation des dépendances requises
         run: npm install --legacy-peer-deps
 
-      - name: 'Unit test Lightning Web Components'
+      - name: 'Unit test Lightning Web Components' # Exécution des tests
         run: npm run test:unit
 
-      # - name: 'Generate metadata delta pull request'  # Utilisez le plug-in sfdx-git-delta pour effectuer un delta, generer le package xml dans un fichier temporaire ex : .temp
-      #   run:  # A faire
-      # - name: 'Déployer les métadonnées sur la branch main'
-      #   if: github.ref == 'refs/heads/main'
-      #   run:  # A faire déployer le code venant du fichier package.xml généré précédemment
-
+# 3) Déploiement
   deploy-to-main:
     name: "Deployment"
     runs-on: ubuntu-latest
-    needs:
+    needs: # Effectué uniquement si les jobs 1 et 2 sont validés
       - sfdxvalidate
       - lwc-tests
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4 # Clone le repo GitHub
         with:
           fetch-depth: 0
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }} # Installation de Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
@@ -104,10 +101,7 @@ jobs:
           npm install -g @salesforce/cli@latest
           echo "y" | sf plugins install sfdx-git-delta
 
-      # - name: 'Authentification Salesforce' # Vous devez avoir une connexion avec Salesforce pour pouvoir deployer le code à la dernière étape.
-      #   run:  # A faire    
-
-      - name: 'Populate auth file with DEVHUB_SFDX_URL secret'
+      - name: 'Populate auth file with DEVHUB_SFDX_URL secret' # Création d'un secret pour l'authentification
         shell: bash
         run: |
           echo ${{ secrets.DEVHUB_SFDX_URL }} > ./DEVHUB_SFDX_URL.txt
@@ -117,12 +111,12 @@ jobs:
               exit 1;
           fi
 
-      - name: 'Authenticate Dev Hub'
+      - name: 'Authenticate Dev Hub' # Connexion à Salesforce
         run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
       
-      - name: 'Generate metadata delta pull request'
+      - name: 'Generate metadata delta pull request' # Génération d'un delta entre la branche actuelle et la branche main
         run: sf sgd source delta --to "HEAD" --from "origin/main" --output-dir "."
 
-      - name: 'Deploy metadata to main branch'
+      - name: 'Deploy metadata to main branch' # Déploiement des modifications
         run: sf project deploy start --target-org devhub -x package/package.xml
       
