@@ -53,7 +53,7 @@ describe('c-displayAccountTotalOrders', () => {
         //Vérification de l'affichage dans le LWC
         const div = element.shadowRoot.querySelector('.slds-theme_shade h1');
         expect(div).not.toBeNull();
-        expect(div.textContent).toBe('Error, no orders related to this account or the amount is less than zero');
+        expect(div.textContent).toBe('No orders related to this account or the amount is less than zero');
     });
 
     it('Display error message if Apex error', async () => {
