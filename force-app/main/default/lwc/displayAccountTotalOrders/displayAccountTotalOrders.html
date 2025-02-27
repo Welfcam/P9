@@ -1,9 +1,9 @@
 <!-- Gère l'affichage du LWC sur l'interface utilisateur -->
 <template>
     <div>
-        <template lwc:if={noOrder}>
+        <template lwc:if={noOrders}>
             <div class="slds-box slds-theme_shade">
-                <h1>{noOrder}</h1>
+                <h1>{noOrders}</h1>
             </div>
         </template>
         <template lwc:elseif={message}>
