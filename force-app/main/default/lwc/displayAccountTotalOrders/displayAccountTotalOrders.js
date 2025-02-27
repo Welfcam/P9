@@ -1,6 +1,5 @@
 //Gère la logique d'affichage du LWC
 import { LightningElement, api, wire } from 'lwc';
-// TODO - récupérer la méthode apex permettant de faire ce calcul
 import getAccountCA from '@salesforce/apex/AccountController.getAccountCA';
 
 export default class DisplayAccountTotalOrders extends LightningElement {
@@ -20,8 +19,8 @@ export default class DisplayAccountTotalOrders extends LightningElement {
             this.noOrder = undefined;
             this.error = undefined;
         //S'il est <= 0 ou undefined, un message informe l'utilisateur
-        } else if (data = undefined || data <= 0) {
-            this.noOrder = 'Error, no orders related to this account or the amount is less than zero';
+        } else if (data === undefined || data <= 0) {
+            this.noOrder = 'No orders related to this account or the amount is less than zero';
             this.message = undefined;
             this.error = undefined;
         //En cas d'erreur Apex, un message informe l'utilisateur
