@@ -19,7 +19,7 @@ export default class DisplayAccountTotalOrders extends LightningElement {
             this.noOrders = undefined;
             this.error = undefined;
         //S'il est <= 0 ou undefined, un message informe l'utilisateur
-        } else if (data === undefined || data <= 0) {
+        } else if ((data === undefined && !error) || data <= 0) {
             this.noOrders = 'No orders related to this account or the amount is less than zero';
             this.message = undefined;
             this.error = undefined;
