@@ -15,7 +15,7 @@ export default class DisplayAccountTotalOrders extends LightningElement {
         //si getAccountCA retourne un montant positif, le montant total des Orders du compte est affiché
         if (data > 0) {
             this.accountCA = data;
-            this.message = 'Total of Orders : ' + data;
+            this.message = 'Total of Orders is : ' + data;
             this.noOrder = undefined;
             this.error = undefined;
         //S'il est <= 0 ou undefined, un message informe l'utilisateur

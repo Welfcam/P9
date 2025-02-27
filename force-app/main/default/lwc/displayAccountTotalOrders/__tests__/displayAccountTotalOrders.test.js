@@ -39,7 +39,7 @@ describe('c-displayAccountTotalOrders', () => {
         //Vérification de l'affichage dans le LWC
         const div = element.shadowRoot.querySelector('.slds-theme_success h1');
         expect(div).not.toBeNull();
-        expect(div.textContent).toBe('Total of Orders : 10000');
+        expect(div.textContent).toBe('Total of Orders is : 10000');
     });
 
     //Test de l'affichage du LWC lorsque getAccountCA retourne un montant = 0
