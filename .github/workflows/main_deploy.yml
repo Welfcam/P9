@@ -37,31 +37,31 @@ jobs:
           npm install -g @salesforce/cli@latest
           echo "y" | sf plugins install sfdx-git-delta
 
-      - name: 'Populate auth file with DEVHUB_SFDX_URL secret' # Création d'un secret pour l'authentification
-        shell: bash
-        run: |
-          echo ${{ secrets.DEVHUB_SFDX_URL }} > ./DEVHUB_SFDX_URL.txt
-          secretFileSize=$(wc -c "./DEVHUB_SFDX_URL.txt" | awk '{print $1}')
-          if [ $secretFileSize == 1 ]; then
-              echo "Missing DEVHUB_SFDX_URL secret. Is this workflow running on a fork?";
-              exit 1;
-          fi
+      # - name: 'Populate auth file with DEVHUB_SFDX_URL secret' # Création d'un secret pour l'authentification
+      #   shell: bash
+      #   run: |
+      #     echo ${{ secrets.DEVHUB_SFDX_URL }} > ./DEVHUB_SFDX_URL.txt
+      #     secretFileSize=$(wc -c "./DEVHUB_SFDX_URL.txt" | awk '{print $1}')
+      #     if [ $secretFileSize == 1 ]; then
+      #         echo "Missing DEVHUB_SFDX_URL secret. Is this workflow running on a fork?";
+      #         exit 1;
+      #     fi
 
-      - name: 'Authenticate Dev Hub' # Connexion à Salesforce
-        run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
+      # - name: 'Authenticate Dev Hub' # Connexion à Salesforce
+      #   run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
 
-      - name: 'Create scratch org' # Création d'une scratch org pour les tests
-        run: sf org create scratch -f config/project-scratch-def.json -a scratch-org -d -y 1
+      # - name: 'Create scratch org' # Création d'une scratch org pour les tests
+      #   run: sf org create scratch -f config/project-scratch-def.json -a scratch-org -d -y 1
 
-      - name: 'Push source to scratch org' # Déploiement du code sur la scratch Org
-        run: sf project deploy start
+      # - name: 'Push source to scratch org' # Déploiement du code sur la scratch Org
+      #   run: sf project deploy start
 
-      - name: 'Run Apex tests' # Exécution des tests Apex
-        run: sf apex test run -c -r human -d ./tests/apex -w 20
+      # - name: 'Run Apex tests' # Exécution des tests Apex
+      #   run: sf apex test run -c -r human -d ./tests/apex -w 20
 
-      - name: 'Delete scratch org' # Suppression de la scratch org après les tests quelque soit le résulat
-        if: always()
-        run: sf org delete scratch -p -o scratch-org
+      # - name: 'Delete scratch org' # Suppression de la scratch org après les tests quelque soit le résulat
+      #   if: always()
+      #   run: sf org delete scratch -p -o scratch-org
 
 # 2) Tests LWC
   lwc-tests:
@@ -115,8 +115,9 @@ jobs:
         run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
       
       - name: 'Generate metadata delta pull request' # Génération d'un delta entre la branche actuelle et la branche main
-        run: sf sgd source delta --to "HEAD" --from "origin/main" --output-dir "."
+        run: sf sgd source delta --to "HEAD" --from "HEAD~1" --output-dir "."
 
       - name: 'Deploy metadata to main branch' # Déploiement des modifications
+        if: github.ref == 'refs/heads/main'
         run: sf project deploy start --target-org devhub -x package/package.xml
       

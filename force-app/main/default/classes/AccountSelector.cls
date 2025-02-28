@@ -6,8 +6,8 @@ public with sharing class AccountSelector {
     }
 
     //La méthode retourne le CA du compte dont l'Id est passé en paramètre
-    public static Decimal getAccountCA(Id acctId) {
-        Account acct = [SELECT Id, Chiffre_d_affaire__c FROM Account WHERE Id = :acctId];
+    public static Decimal getAccountCA(Id accountId) {
+        Account acct = [SELECT Id, Chiffre_d_affaire__c FROM Account WHERE Id = :accountId];
         return acct.Chiffre_d_affaire__c;
     }
 }
